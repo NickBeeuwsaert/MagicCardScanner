@@ -1,6 +1,8 @@
 # Magic: The Gathering Card Scanner
 
-A project to scan my Magic: The Gathering cards
+A project to scan my _Magic: The Gathering_ cards
+
+Written in PySide2 because PySide6 doesnt have the multimedia frameworks and I couldnt get OpenCV and GTK to run in the same environment on Windows.
 
 ## Setup
 
