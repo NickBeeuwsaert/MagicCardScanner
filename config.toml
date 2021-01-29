@@ -1,12 +1,2 @@
-[database]
-sqlalchemy.url = sqlite:///library.db
-
 [ocr]
-tessaract_cmd = "C:\Program Files\Tesseract-OCR\tesseract"
-
-[ocr.title]
-# location of Magic card title, once the card has been resized to 1000x1000px
-x = 65
-y = 55
-width = 700
-height = 45
+tessaract_cmd = "C:\\Program Files\\Tesseract-OCR\\tesseract"

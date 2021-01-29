@@ -3,7 +3,6 @@ import numpy as np
 import pytesseract
 
 phasher = cv2.img_hash.PHash_create()
-pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract'
 
 # Rough estimate of 65mm for width and 90mm for height
 MTG_CARD_ASPECT_RATIO = 65.0 / 90.0
@@ -60,6 +59,22 @@ def extract_card(buffer):
     # then stop processing
     if abs((width / height) - MTG_CARD_ASPECT_RATIO) > 0.05:
         return
+
+    # transform = cv2.getAffineTransform(
+    #     np.float32(box)[1:],
+    #     np.array([
+    #         # [1000, 0],
+    #         [0, 0],
+    #         [0, 1000],
+    #         [1000, 1000],
+    #     ], dtype=np.float32)
+    # )
+
+    # transformed_image = cv2.warpAffine(
+    #     grayscale,
+    #     transform,
+    #     (1000, 1000)
+    # )
 
     transform = cv2.getPerspectiveTransform(
         np.float32(box),

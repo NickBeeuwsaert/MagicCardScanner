@@ -3,6 +3,7 @@ import time
 
 import numpy as np
 import pkg_resources
+import sqlalchemy
 from PySide2.QtCore import Slot
 from PySide2.QtGui import QImage
 from PySide2.QtMultimedia import QCamera, QVideoProbe
@@ -16,7 +17,6 @@ from .widgets import CameraList, CameraViewfinder
 
 class MainWindow(QMainWindow):
     camera = None
-    last_frame = time.monotonic()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,6 +28,18 @@ class MainWindow(QMainWindow):
         self.ui.splitter.setStretchFactor(1, 1)
 
         self.setWindowTitle("Magic Card Scanner")
+    
+    @reify
+    def last_frame(self):
+        return time.monotonic()
+
+    @reify
+    def engine(self):
+        return sqlalchemy.engine_from_config(self.config['db'])
+
+    @reify
+    def connection(self):
+        return self.engine.connect()
 
 
     def _on_frame(self, frame):
@@ -67,11 +79,10 @@ class MainWindow(QMainWindow):
             self.camera.stop()
 
         camera = QCamera(bytearray(device, 'utf-8'), self)
-        camera.start()
-        camera.setViewfinder(self.ui.viewfinder)
         camera.setCaptureMode(
             QCamera.CaptureMode.CaptureViewfinder
         )
+        camera.setViewfinder(self.ui.viewfinder)
         self.video_probe.setSource(camera)
         self.camera = camera
         camera.start()
