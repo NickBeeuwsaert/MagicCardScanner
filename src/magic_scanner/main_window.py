@@ -3,7 +3,6 @@ import time
 
 import numpy as np
 import pkg_resources
-import sqlalchemy
 from PySide2.QtCore import Slot
 from PySide2.QtGui import QImage
 from PySide2.QtMultimedia import QCamera, QVideoProbe
@@ -29,15 +28,6 @@ class MainWindow(QMainWindow):
         self.ui.splitter.setStretchFactor(1, 1)
 
         self.setWindowTitle("Magic Card Scanner")
-
-    @reify
-    def engine(self):
-        return sqlalchemy.engine_from_config(self.config['db'])
-
-    @reify
-    def connection(self):
-        return self.engine.connect()
-
 
     def _on_frame(self, frame):
         image = frame.image()

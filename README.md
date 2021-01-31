@@ -6,6 +6,8 @@ Written in PySide2 because PySide6 doesnt have the multimedia frameworks and I c
 
 ## Setup
 
+Currently, only Windows is supported because PySide2 and opencv cause the application to crash on linux, and my webcam doesn't have very good linux support.
+
 ### 3D Printing
 
 To make scanning cards easier, you can 3D print a holder for your camera
@@ -25,30 +27,15 @@ The CAD files are designed for a Ender 3 Pro, so some tweaking might be needed t
    venv\Scripts\activate
    ```
 
-   \*nix:
-
-   ```sh
-   python3 -m venv venv
-   . venv/bin/activate
-   ```
-
 2. Install [Tesseract OCR](https://tesseract-ocr.github.io/tessdoc/Downloads.html)
 3. Install the application
-   ```sh
+   ```powershell
    pip install .
    ```
 
 # Running
 
 The application should be pretty simple to run,
-
-\*nix:
-
-```sh
-magic_scanner
-```
-
-Windows:
 
 ```powershell
 magic_scanner --config config.toml

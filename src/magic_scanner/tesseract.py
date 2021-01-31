@@ -10,6 +10,7 @@ Instead I'm writing a thin wrapper around the tesseract C API, which is many man
 """
 from contextlib import contextmanager
 from ctypes import CDLL, c_char_p, c_int, c_void_p
+from ctypes.util import find_library
 
 import numpy as np
 
@@ -26,14 +27,18 @@ class Tesseract:
     # used for cleanup, we dont need to initialize a handle just to free it
     _initialized = False
 
-    def __init__(self, language=None, data_path=None, tesseract_library='tesseract'):
+    def __init__(self, language=None, data_path=None, tesseract_library=None):
         self.language = language
         self.data_path = data_path
         self._tesseract_library = tesseract_library
 
     @reify
     def _libtesseract(self):
-        return CDLL(self._tesseract_library)
+        library_name = self._tesseract_library
+        if library_name is None:
+            library_name = find_library("tesseract")
+
+        return CDLL(library_name)
 
     @reify
     def _version(self):
