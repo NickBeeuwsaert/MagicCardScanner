@@ -47,7 +47,6 @@ def get_angle(point):
     return np.arctan2(y, x)
 
 def extract_card(buffer):
-
     buffer = cv2.rotate(buffer, cv2.ROTATE_90_COUNTERCLOCKWISE)
     grayscale = cv2.cvtColor(buffer, cv2.COLOR_RGB2GRAY)
     blurred = cv2.GaussianBlur(grayscale, (5, 5), 0)
@@ -108,10 +107,10 @@ def extract_card(buffer):
     transform = cv2.getPerspectiveTransform(
         np.float32(box),
         np.array([
-            [1000, 0],
-            [0, 0],
-            [0, 1000],
             [1000, 1000],
+            [0, 1000],
+            [0, 0],
+            [1000, 0],
         ], dtype=np.float32)
     )
 

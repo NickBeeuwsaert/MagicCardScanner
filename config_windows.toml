@@ -1,3 +1,6 @@
+[main]
+video_capture_index = 0
+
 [tesseract]
 language = "eng"
 data_path = "C:/Program Files/Tesseract-OCR/tessdata"

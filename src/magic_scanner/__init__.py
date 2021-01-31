@@ -1,11 +1,13 @@
 import argparse
 import sys
+from tkinter import Tk
+from tkinter.ttk import Style
 
+import cv2
 import toml
-from PySide2.QtWidgets import QApplication
 
-from .main_window import MainWindow
 from .tesseract import Tesseract
+from .widgets import MainWindow
 
 
 def toml_file(filename):
@@ -13,11 +15,6 @@ def toml_file(filename):
         return toml.load(fp)
 
 def main():
-    app = QApplication(sys.argv)
-
-    # Not sure if I should use Qt's argument parsing facilities
-    # But I might try and switch this app to tkinter or something
-    # and get rid of the Qt dependency
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--config', '-c',
@@ -25,10 +22,21 @@ def main():
         type=toml_file
     )
     args = parser.parse_args()
-    with Tesseract(**args.config.get('tesseract', {})) as tesseract:
-        print(f"Tesseract version: {tesseract.version}")
-        window = MainWindow(tesseract)
+    config = args.config
 
-        window.show()
+    root = Tk()
+    style = Style(root)
+    style.configure("Viewfinder.TFrame", background="black")
 
-        sys.exit(app.exec_())
+    try:
+        device_id = config['main']['video_capture_index']
+    except KeyError:
+        # just use the default camera
+        # apparently it is black magic to get the list of camera on a device
+        device_id = 0
+    capture = cv2.VideoCapture(device_id)
+
+    with Tesseract(**config.get('tesseract', {})) as tesseract:
+        main_window = MainWindow(root, capture, tesseract)
+
+        root.mainloop()
