@@ -1,0 +1,4 @@
+[tesseract]
+language = "eng"
+data_path = "C:/Program Files/Tesseract-OCR/tessdata"
+tesseract_library = "C:/Program Files/Tesseract-OCR/libtesseract-5.dll"

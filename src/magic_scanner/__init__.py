@@ -6,7 +6,12 @@ import toml
 from PySide2.QtWidgets import QApplication
 
 from .main_window import MainWindow
+from .tesseract import Tesseract
 
+
+def toml_file(filename):
+    with open(filename, 'r') as fp:
+        return toml.load(fp)
 
 def main():
     app = QApplication(sys.argv)
@@ -16,16 +21,15 @@ def main():
     # and get rid of the Qt dependency
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--tesseract-cmd',
-        default=None
+        '--config', '-c',
+        default={},
+        type=toml_file
     )
     args = parser.parse_args()
+    with Tesseract(**args.config.get('tesseract', {})) as tesseract:
+        print(f"Tesseract version: {tesseract.version}")
+        window = MainWindow(tesseract)
 
-    if args.tesseract_cmd:
-        pytesseract.pytesseract.tesseract_cmd = args.tesseract_cmd
+        window.show()
 
-    window = MainWindow()
-
-    window.show()
-
-    sys.exit(app.exec_())
+        sys.exit(app.exec_())

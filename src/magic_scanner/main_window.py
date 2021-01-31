@@ -11,15 +11,16 @@ from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QMainWindow
 
 from .decorators import reify
-from .image_ops import extract_card, get_image_hash, read_title
+from .image_ops import extract_card, get_image_hash, get_title
 from .widgets import CameraList, CameraViewfinder
 
 
 class MainWindow(QMainWindow):
     camera = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, tesseract, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.tesseract = tesseract
         self.setCentralWidget(self.ui)
         self.ui.deviceList.refresh()
 
@@ -28,10 +29,6 @@ class MainWindow(QMainWindow):
         self.ui.splitter.setStretchFactor(1, 1)
 
         self.setWindowTitle("Magic Card Scanner")
-    
-    @reify
-    def last_frame(self):
-        return time.monotonic()
 
     @reify
     def engine(self):
@@ -43,12 +40,6 @@ class MainWindow(QMainWindow):
 
 
     def _on_frame(self, frame):
-        now = time.monotonic()
-        delta = now - self.last_frame
-        if delta < 1/5:
-            return
-        self.last_frame = now
-
         image = frame.image()
         image.convertTo(QImage.Format_BGR888)
         buffer = np.asarray(
@@ -63,11 +54,20 @@ class MainWindow(QMainWindow):
         card = extract_card(buffer)
         if card is None:
             return
-        title = read_title(card)
+
+        title_image = get_title(card)
+        if title_image is not None:
+            self.tesseract.set_image(title_image)
+            self.ui.cardTitleOCRLineEdit.setText(self.tesseract.get_text())
+
+        # My plan for using phashes was that once a card has been manually verified
+        # I could pull a high resolution scan of it down from a service like scryfall
+        # and phash that, that way next time the same card is scanned we can also 
+        # check against the phash of a good scan for better confirmation
+        # unfortunately, my webcam is not high enough quality, and doesnt produce a close match
+        # to a high resolution scan
         phash = get_image_hash(card)
         hash_str = ''.join(format(b, '02x') for b in phash.flat)
-
-        self.ui.cardTitleOCRLineEdit.setText(title)
         self.ui.perceptualHashLineEdit.setText(hash_str)
 
 
