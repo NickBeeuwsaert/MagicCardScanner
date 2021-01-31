@@ -9,7 +9,7 @@ from PySide2.QtMultimedia import QCamera, QVideoProbe
 from PySide2.QtUiTools import QUiLoader
 from PySide2.QtWidgets import QMainWindow
 
-from .decorators import reify
+from .decorators import reify, throttle
 from .image_ops import extract_card, get_image_hash, get_title
 from .widgets import CameraList, CameraViewfinder
 
@@ -29,6 +29,10 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Magic Card Scanner")
 
+        self.ui.deviceList.activated.connect(lambda _: self.camera_change())
+
+    # run only on a few frames per second so my laptop doesn't melt
+    @throttle(1 / 10)
     def _on_frame(self, frame):
         image = frame.image()
         image.convertTo(QImage.Format_BGR888)

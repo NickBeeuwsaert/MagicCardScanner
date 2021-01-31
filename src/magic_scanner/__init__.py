@@ -1,7 +1,6 @@
 import argparse
 import sys
 
-import pytesseract
 import toml
 from PySide2.QtWidgets import QApplication
 

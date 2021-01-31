@@ -53,13 +53,13 @@ def extract_card(buffer):
     blurred = cv2.GaussianBlur(grayscale, (5, 5), 0)
     _, threshold = cv2.threshold(
         blurred,
-        100,
+        110,
         255,
-        cv2.THRESH_BINARY
+        cv2.THRESH_BINARY_INV
     )
 
     contours, _ = cv2.findContours(
-        255 - threshold.copy(),
+        threshold,
         cv2.RETR_EXTERNAL,
         cv2.CHAIN_APPROX_SIMPLE
     )
@@ -81,6 +81,7 @@ def extract_card(buffer):
         return
 
     largestCard, *_ = cardContours
+
     rectangle = cv2.minAreaRect(largestCard)
     center, size, angle = rectangle
     width, height = size
@@ -90,10 +91,10 @@ def extract_card(buffer):
         for point in cv2.boxPoints(rectangle)
     ], key=lambda p: get_angle(center - p))
 
-    # if the image isn't close enough in aspect ratio to our reference ratio
-    # then stop processing
-    if abs((width / height) - MTG_CARD_ASPECT_RATIO) > 0.05:
-        return
+    # # if the image isn't close enough in aspect ratio to our reference ratio
+    # # then stop processing
+    # if abs((width / height) - MTG_CARD_ASPECT_RATIO) > 0.05:
+    #     return
 
     # Perspective warping probably isn't necessary here
     # since we are just transforming a box with no perspective on it at all
@@ -137,7 +138,7 @@ def get_title(card):
     x = 85
     y = 60
     width = 600
-    height = 35
+    height = 40
     title_image = card[
         y : y + height,
         x : x + width
