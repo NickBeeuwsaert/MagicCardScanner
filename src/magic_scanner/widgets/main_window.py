@@ -41,8 +41,9 @@ class MainWindow(tk.PanedWindow):
         fps = self.capture.get(cv2.CAP_PROP_FPS)
         _, frame = self.capture.read()
 
+        self.viewfinder.set_frame(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
         self._process_frame(frame)
-        self.viewfinder.set_frame(frame)
+
 
         self.after(int(1000 / fps), self._update)
 
